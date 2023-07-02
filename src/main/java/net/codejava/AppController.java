@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 
 @Controller
-public class AppController {
+public class AppController{
 
 	@Autowired
 	private UserRepository userRepo;
@@ -23,20 +23,27 @@ public class AppController {
 	@GetMapping("/register")
 	public String showRegistrationForm(Model model) {
 		model.addAttribute("user", new User());
-		
-		return "signup_form";
+		return "signup";
 	}
 	
 	@PostMapping("/process_register")
 	public String processRegister(User user) {
+		User u = userRepo.findByEmail(user.getEmail());
+		if(u.getEmail() != null) {
+			return "not_found";
+		}
 		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 		String encodedPassword = passwordEncoder.encode(user.getPassword());
 		user.setPassword(encodedPassword);
 		
 		userRepo.save(user);
 		
-		return "register_success";
+		return "login";
 	}
+//	@PostMapping("/after_login")
+//	public String home(){
+//
+//	}
 	
 	@GetMapping("/users")
 	public String listUsers(Model model) {
